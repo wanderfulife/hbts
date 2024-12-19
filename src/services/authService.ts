@@ -1,9 +1,8 @@
 import { 
   GoogleAuthProvider, 
-  signInWithRedirect,
+  signInWithPopup,
   signOut as firebaseSignOut,
   onAuthStateChanged,
-  getRedirectResult,
   User
 } from 'firebase/auth';
 import { auth } from '../config/firebase';
@@ -15,19 +14,10 @@ export const authService = {
 
   signInWithGoogle: async () => {
     try {
-      await signInWithRedirect(auth, googleProvider);
+      const result = await signInWithPopup(auth, googleProvider);
+      return result.user;
     } catch (error) {
       console.error('Error signing in with Google:', error);
-      throw error;
-    }
-  },
-
-  handleRedirectResult: async () => {
-    try {
-      const result = await getRedirectResult(auth);
-      return result?.user || null;
-    } catch (error) {
-      console.error('Error handling redirect result:', error);
       throw error;
     }
   },

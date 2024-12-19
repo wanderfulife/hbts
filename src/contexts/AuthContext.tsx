@@ -16,52 +16,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Handle the redirect result as soon as the app loads
-    const handleRedirect = async () => {
-      try {
-        const user = await authService.handleRedirectResult();
-        if (user) {
-          setUser(user);
-        }
-      } catch (error) {
-        console.error('Error handling redirect:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    // Set up the auth state listener
     const unsubscribe = authService.onAuthStateChanged((user) => {
+      console.log('Auth state changed:', user ? 'User logged in' : 'No user');
       setUser(user);
       setIsLoading(false);
     });
-
-    // Call handleRedirect immediately
-    handleRedirect();
 
     return () => unsubscribe();
   }, []);
 
   const signIn = async () => {
     try {
-      setIsLoading(true);
-      await authService.signInWithGoogle();
+      console.log('Starting sign in process...');
+      const user = await authService.signInWithGoogle();
+      console.log('Sign in successful:', user);
     } catch (error) {
-      console.error('Error signing in:', error);
-      setIsLoading(false);
+      console.error('Error during sign in:', error);
       throw error;
     }
   };
 
   const signOut = async () => {
     try {
-      setIsLoading(true);
       await authService.signOut();
     } catch (error) {
       console.error('Error signing out:', error);
       throw error;
-    } finally {
-      setIsLoading(false);
     }
   };
 
